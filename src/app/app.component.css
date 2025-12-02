@@ -1,0 +1,35 @@
+.app-header {
+  background-color: #3e2723; /* สีน้ำตาลเข้ม (Theme อาหาร) */
+  padding: 1rem 2rem;
+  border-bottom: 3px solid #d9534f; /* สีแดง-ส้มเน้น */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.8rem;
+}
+
+.app-header nav a {
+  margin-left: 1.5rem;
+  text-decoration: none;
+  color: #f0ad4e; /* สีส้ม/เหลือง เน้น */
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.app-header nav a:hover,
+.app-header nav a.active {
+  background-color: #f0ad4e;
+  color: #3e2723;
+}
+
+main {
+  /* ลบ padding ที่อาจมีอยู่เดิมออก เพื่อให้ Component ย่อยจัดการ Layout ได้เอง */
+  padding: 0;
+}
