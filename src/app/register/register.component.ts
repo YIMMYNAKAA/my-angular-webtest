@@ -9,145 +9,167 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [FormsModule, CommonModule, HttpClientModule], 
   template: `
-    <div class="register-container">
+    <div class="register-page">
       <div class="register-card">
-        <h2>{{ title }}</h2>
-        
-        <!-- แสดงข้อความสถานะ -->
-        <div *ngIf="statusMessage" class="status-message" [class.success]="isRegisterSuccess">{{ statusMessage }}</div>
+
+        <h1>Create Account</h1>
+        <p class="subtitle">Fill in the details below to register your new account</p>
+
+        <div *ngIf="statusMessage" class="status-message" [class.success]="isRegisterSuccess">
+          {{ statusMessage }}
+        </div>
 
         <form (ngSubmit)="onRegister()">
-          <div class="form-group">
-            <label for="email">อีเมล (Email)</label>
-            <input type="email" id="email" name="email" [(ngModel)]="email" required>
+
+          <label>Email</label>
+          <input type="email" [(ngModel)]="email" name="email" placeholder="Enter your email" required>
+
+          <label>Username</label>
+          <input type="text" [(ngModel)]="username" name="username" placeholder="Enter username" required>
+
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input type="password" [(ngModel)]="password" name="password" placeholder="Create password" required>
           </div>
 
-          <div class="form-group">
-            <label for="username">ชื่อผู้ใช้ (Username)</label>
-            <input type="text" id="username" name="username" [(ngModel)]="username" required>
-          </div>
-
-          <div class="form-group">
-            <label for="password">รหัสผ่าน (Password)</label>
-            <input type="password" id="password" name="password" [(ngModel)]="password" required>
-          </div>
-
-          <button type="submit" class="register-btn">ลงทะเบียน</button>
+          <button class="register-btn">Create Account</button>
         </form>
-        
-        <button class="login-link-btn" (click)="onNavigateToLogin()">
-          ไปที่หน้าเข้าสู่ระบบ
-        </button>
-        <p class="hint">ข้อมูลจะถูกส่งไปยัง Server ภายนอก</p>
+
+        <p class="login-text">
+          Already have an account? 
+          <a (click)="onNavigateToLogin()">Login</a>
+        </p>
+
       </div>
     </div>
   `,
   styles: [`
-    .register-container {
+    .register-page {
+      min-height: 100vh;
+      background: url('4.jpg') center/cover no-repeat;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 80vh;
-      background-color: #f4f4f9;
     }
+
     .register-card {
-      background: white;
-      padding: 2.5rem;
-      border-radius: 10px;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-      width: 100%;
-      max-width: 450px;
-      text-align: center;
-      border: 1px solid #ddd;
-    }
-    h2 {
-      margin-bottom: 2rem;
-      color: #3e2723;
-      font-size: 1.8rem;
-    }
-    .status-message {
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 4px;
-      font-weight: bold;
-      color: #721c24;
-      background-color: #f8d7da;
-      border: 1px solid #f5c6cb;
-    }
-    .status-message.success {
-      color: #155724;
-      background-color: #d4edda;
-      border-color: #c3e6cb;
-    }
-    .form-group {
-      margin-bottom: 1.25rem;
+      width: 450px;
+      padding: 35px;
+      border-radius: 25px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      color: #fff;
+      animation: fadeIn 0.4s ease;
       text-align: left;
     }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #ddd;
+      margin-bottom: 25px;
+    }
+
     label {
       display: block;
-      margin-bottom: 0.5rem;
+      margin-top: 15px;
+      margin-bottom: 5px;
       font-weight: 600;
-      color: #555;
+      font-size: 0.95rem;
     }
+
     input {
       width: 100%;
-      padding: 0.8rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      font-size: 1rem;
+      margin-bottom: 10px;
     }
+
+    input::placeholder {
+      color: rgba(230,230,230,0.8);
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    /* ปุ่ม Register */
     .register-btn {
       width: 100%;
-      padding: 0.8rem;
-      background-color: #5cb85c;
-      color: white;
+      padding: 13px;
+      background: #257CFF;
       border: none;
-      border-radius: 6px;
-      font-size: 1.1rem;
-      margin-top: 1.5rem;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.3s;
+      margin-top: 20px;
+      transition: 0.25s;
     }
+
     .register-btn:hover {
-      background-color: #4cae4c;
+      background: #1b63cc;
     }
-    .login-link-btn {
-      width: 100%;
-      padding: 0.8rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 1.1rem;
-      margin-top: 0.75rem;
+
+    .login-text {
+      margin-top: 20px;
+      text-align: center;
+      color: #ddd;
+    }
+
+    .login-text a {
+      color: #4da3ff;
       cursor: pointer;
-      transition: background-color 0.3s;
+      font-weight: 600;
     }
-    .login-link-btn:hover {
-      background-color: #0056b3;
+
+    .status-message {
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      background: rgba(255, 80, 80, 0.25);
+      border: 1px solid rgba(255, 140, 140, 0.4);
+      color: white;
+      font-weight: bold;
     }
-    .hint {
-        margin-top: 1.5rem;
-        color: #888;
-        font-size: 0.9rem;
+
+    .status-message.success {
+      background: rgba(70, 255, 70, 0.25);
+      border-color: rgba(140, 255, 140, 0.4);
+      color: #d7ffd7;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
     }
   `]
 })
 export class RegisterComponent {
-  title = 'ลงทะเบียนสมาชิกใหม่';
   email = '';
   username = '';
   password = '';
   statusMessage = '';
   isRegisterSuccess = false;
 
-  constructor(private http: HttpClient, private router: Router) {} 
+  constructor(private http: HttpClient, private router: Router) {}
 
   onRegister() {
     this.statusMessage = '';
     this.isRegisterSuccess = false;
-    
-    // ตรวจสอบความถูกต้องของข้อมูลเบื้องต้น
+
     if (!this.email || !this.username || !this.password) {
       this.statusMessage = 'โปรดกรอกข้อมูลให้ครบถ้วน';
       return;
@@ -159,34 +181,22 @@ export class RegisterComponent {
       password: this.password
     };
 
-    // จำลองการส่งข้อมูลไปยัง Server ภายนอก (ตาม URL ที่คุณกำหนดไว้)
     this.http.post("http://192.168.1.166/php-bob/register.php", data)
       .subscribe({
         next: (res: any) => {
-          // หาก Server ส่ง status=success กลับมา
           if (res.status === "success") {
             this.isRegisterSuccess = true;
-            this.statusMessage = 'ลงทะเบียนสำเร็จ! โปรดเข้าสู่ระบบ';
-            this.email = '';
-            this.username = '';
-            this.password = '';
-            // ในการใช้งานจริง ควรจะนำทางไปยังหน้า login ทันที
-            // this.router.navigate(['/login']); 
+            this.statusMessage = 'ลงทะเบียนสำเร็จ!';
           } else {
-            // กรณีลงทะเบียนไม่สำเร็จ (เช่น ชื่อผู้ใช้ซ้ำ)
-            this.statusMessage = "ผิดพลาด: " + (res.message || 'ไม่สามารถลงทะเบียนได้');
+            this.statusMessage = "ผิดพลาด: " + res.message;
           }
         },
         error: (err) => {
-            // กรณีเกิดข้อผิดพลาดในการเชื่อมต่อ HTTP
-            console.error("HTTP Error:", err);
-            // ปรับปรุงการแสดงข้อความเพื่อให้มีรายละเอียดมากขึ้น
-            this.statusMessage = `เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์: ${err.message}. โปรดตรวจสอบคอนโซล (F12) เพื่อดูข้อมูลเพิ่มเติม`;
+          this.statusMessage = 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ' + err.message;
         }
       });
   }
 
-  // เมธอดสำหรับนำทางไปหน้า Login
   onNavigateToLogin() {
     this.router.navigate(['/login']);
   }

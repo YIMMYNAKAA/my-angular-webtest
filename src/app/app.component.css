@@ -1,35 +1,36 @@
 .app-header {
-  background-color: #3e2723; /* สีน้ำตาลเข้ม (Theme อาหาร) */
-  padding: 1rem 2rem;
-  border-bottom: 3px solid #d9534f; /* สีแดง-ส้มเน้น */
+  position: relative;
+  padding: 1.2rem 2rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+
+
+  /* ✔ ทำให้เห็นเบลอจากด้านหลัง */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* ให้สูงขึ้นเล็กน้อย */
+  min-height: 80px;
+
+  /* ใส่เงา */
+  box-shadow: 
+    0 4px 6px -1px rgba(0,0,0,0.3),
+    inset 0 -3px 0 rgba(68, 1, 255, 0.7);
 }
 
-.app-header h1 {
-  margin: 0;
-  color: #fff;
-  font-size: 1.8rem;
+/* 🔥 Overlay มืดๆ ทับบนภาพ (ทำให้เนื้อหาชัดขึ้น) */
+.app-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 0, 0, 0.45); /* ปรับความมืดได้ */
+  backdrop-filter: blur(3px);
+  z-index: 1;
 }
 
-.app-header nav a {
-  margin-left: 1.5rem;
-  text-decoration: none;
-  color: #f0ad4e; /* สีส้ม/เหลือง เน้น */
-  font-weight: 500;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.app-header nav a:hover,
-.app-header nav a.active {
-  background-color: #f0ad4e;
-  color: #3e2723;
-}
-
-main {
-  /* ลบ padding ที่อาจมีอยู่เดิมออก เพื่อให้ Component ย่อยจัดการ Layout ได้เอง */
-  padding: 0;
+/* เนื้อหาอยู่ด้านบน overlay */
+.app-header nav {
+  position: relative;
+  z-index: 2;
 }

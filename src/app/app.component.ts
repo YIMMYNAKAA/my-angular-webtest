@@ -10,5 +10,5 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'เมนูอาหารอร่อย'; // ชื่อแอปพลิเคชัน
+  // ตัวแปร title ถูกนำออกแล้ว
 }
