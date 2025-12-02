@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
+import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 
@@ -17,6 +17,11 @@ import { EMPTY } from 'rxjs';
         <h1>Welcome Back!</h1>
         <p class="subtitle">Enter your details below to sign in into your account</p>
 
+        @if (statusMessage) {
+          <p class="status-message" [class.success]="isLoginSuccess" [class.error]="!isLoginSuccess">
+            {{ statusMessage }}
+          </p>
+        }
 
         <form (ngSubmit)="onLogin()">
           <label>Email</label>
@@ -71,48 +76,22 @@ import { EMPTY } from 'rxjs';
       margin-bottom: 25px;
     }
 
-    .social-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .social-buttons button {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .status-message {
       padding: 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.3);
-      background: rgba(255,255,255,0.15);
-      color: white;
-      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 15px;
       font-weight: 500;
-      transition: 0.3s;
-    }
-
-    .social-buttons img {
-      width: 18px;
-      height: 18px;
-    }
-
-    .divider {
       text-align: center;
-      color: #ccc;
-      margin: 20px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.8rem;
     }
-
-    .divider span {
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.3);
+    .status-message.error {
+      background-color: rgba(255, 99, 71, 0.2);
+      color: tomato;
+      border: 1px solid tomato;
+    }
+    .status-message.success {
+      background-color: rgba(144, 238, 144, 0.2);
+      color: lightgreen;
+      border: 1px solid lightgreen;
     }
 
     label {
@@ -131,10 +110,6 @@ import { EMPTY } from 'rxjs';
       color: white;
       font-size: 1rem;
       margin-bottom: 10px;
-    }
-
-    input::placeholder {
-      color: rgba(230,230,230,0.8);
     }
 
     .forgot {
@@ -183,23 +158,46 @@ import { EMPTY } from 'rxjs';
   `]
 })
 export class LoginComponent {
+
   email = '';
   password = '';
   statusMessage = '';
   isLoginSuccess = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   onLogin() {
-    this.authService.login({ email: this.email, password: this.password })
-      .pipe(catchError(() => {
-        this.statusMessage = 'โปรดตรวจสอบข้อมูลอีกครั้ง';
-        return EMPTY;
-      }))
+    this.statusMessage = '';
+    this.isLoginSuccess = false;
+
+    const apiUrl = 'http://192.168.1.166/php-bob/login.php';
+
+    // ส่งข้อมูลแบบปกติ JSON
+    const body = {
+      email: this.email,
+      password: this.password
+    };
+
+    this.http.post(apiUrl, body)
+      .pipe(
+        catchError(() => {
+          this.statusMessage = 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ ❌';
+          this.isLoginSuccess = false;
+          return EMPTY;
+        })
+      )
       .subscribe((res: any) => {
+
         if (res.status === 'success') {
-          this.router.navigate(['/']);
+          this.isLoginSuccess = true;
+          this.statusMessage = res.message;
+
+          setTimeout(() => {
+            this.router.navigate(['/home']);
+          }, 800);
+
         } else {
+          this.isLoginSuccess = false;
           this.statusMessage = res.message;
         }
       });
