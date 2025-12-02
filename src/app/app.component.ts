@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  standalone: true, // กำหนดให้เป็น Standalone Component
+  standalone: true, //
   imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  // ตัวแปร title ถูกนำออกแล้ว
 }

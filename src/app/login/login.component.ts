@@ -17,6 +17,7 @@ import { EMPTY } from 'rxjs';
         <h1>Welcome Back!</h1>
         <p class="subtitle">Enter your details below to sign in into your account</p>
 
+
         <form (ngSubmit)="onLogin()">
           <label>Email</label>
           <input type="email" [(ngModel)]="email" name="email" placeholder="Enter your email" required>
