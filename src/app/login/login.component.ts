@@ -172,7 +172,6 @@ export class LoginComponent {
 
     const apiUrl = 'http://192.168.1.166/php-bob/login.php';
 
- 
     const body = {
       email: this.email,
       password: this.password
@@ -191,6 +190,9 @@ export class LoginComponent {
         if (res.status === 'success') {
           this.isLoginSuccess = true;
           this.statusMessage = res.message;
+
+          // ✅ บันทึกข้อมูล user ลง localStorage
+          localStorage.setItem('currentUser', JSON.stringify(res.user));
 
           setTimeout(() => {
             this.router.navigate(['/home']);

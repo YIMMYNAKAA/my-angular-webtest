@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 interface GameState {
   playerX: number;
@@ -25,6 +26,13 @@ interface LeaderboardEntry {
   player_name: string;
   score: number;
   play_date: string;
+  email?: string;
+}
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
 }
 
 @Component({
@@ -34,23 +42,25 @@ interface LeaderboardEntry {
   template: `
     <div class="game-container">
       
-      <!-- Menu -->
-      <div *ngIf="gameState === 'menu'" class="menu-screen">
+      <!-- Login Required Screen -->
+      <div *ngIf="!currentUser" class="login-required-screen">
+        <div class="login-required-card">
+          <h1>🏎️ Racing Game</h1>
+          <p class="subtitle">กรุณาเข้าสู่ระบบก่อนเล่นเกม</p>
+          <button class="login-btn" (click)="goToLogin()">🔐 เข้าสู่ระบบ</button>
+          <button class="register-btn" (click)="goToRegister()">📝 สมัครสมาชิก</button>
+        </div>
+      </div>
+
+      <!-- Menu Screen -->
+      <div *ngIf="currentUser && gameState === 'menu'" class="menu-screen">
         <div class="menu-card">
           <h1>🏎️ Racing Game</h1>
-          <p class="subtitle">หลีกหลบรถคู่แข่งและทำคะแนนสูงสุด!</p>
-          
-          <div class="input-group">
-            <input
-              type="text"
-              [(ngModel)]="playerName"
-              placeholder="ใส่ชื่อผู้เล่น"
-              (keyup.enter)="startGame()"
-              maxlength="50"
-            />
-          </div>
+          <p class="subtitle">ยินดีต้อนรับ, {{currentUser.name}}!</p>
+          <p class="info-text">หลีกหลบรถคู่แข่งและทำคะแนนสูงสุด!</p>
 
           <button class="start-btn" (click)="startGame()">🚀 เริ่มเกม</button>
+          <button class="logout-btn" (click)="onLogout()">🚪 ออกจากระบบ</button>
 
           <div class="instructions">
             <p class="ins-title">🎮 วิธีเล่น:</p>
@@ -81,12 +91,12 @@ interface LeaderboardEntry {
         </div>
       </div>
 
-      <!-- Playing -->
-      <div *ngIf="gameState === 'playing'" class="game-screen">
+      <!-- Playing Screen -->
+      <div *ngIf="currentUser && gameState === 'playing'" class="game-screen">
         <div class="game-area">
           <div class="score-panel">
             <p class="score-text">คะแนน: {{score}}</p>
-            <p class="player-text">ผู้เล่น: {{playerName}}</p>
+            <p class="player-text">ผู้เล่น: {{currentUser.name}}</p>
           </div>
           <canvas #gameCanvas width="400" height="600"></canvas>
         </div>
@@ -103,8 +113,8 @@ interface LeaderboardEntry {
         </div>
       </div>
 
-      <!-- Game Over -->
-      <div *ngIf="gameState === 'gameover'" class="gameover-screen">
+      <!-- Game Over Screen -->
+      <div *ngIf="currentUser && gameState === 'gameover'" class="gameover-screen">
         <div class="gameover-card">
           <h1 class="gameover-title">💥 Game Over!</h1>
           <p class="score-label">คะแนนของคุณ</p>
@@ -148,12 +158,12 @@ interface LeaderboardEntry {
       padding: 20px;
     }
 
-    .menu-screen, .gameover-screen {
+    .menu-screen, .gameover-screen, .login-required-screen {
       width: 100%;
       max-width: 600px;
     }
 
-    .menu-card, .gameover-card {
+    .menu-card, .gameover-card, .login-required-card {
       background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(18px);
       border-radius: 25px;
@@ -171,44 +181,54 @@ interface LeaderboardEntry {
     }
 
     .subtitle {
+      color: #fbbf24;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .info-text {
       color: #ddd;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       margin-bottom: 30px;
     }
 
-    .input-group {
-      margin-bottom: 25px;
-    }
-
-    input {
-      padding: 15px 25px;
-      border-radius: 15px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      font-size: 1.1rem;
-      width: 100%;
-      max-width: 300px;
-      text-align: center;
-    }
-
-    input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .start-btn, .restart-btn {
+    .start-btn, .restart-btn, .login-btn, .register-btn, .logout-btn {
       padding: 15px 40px;
-      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
-      color: white;
       border: none;
       border-radius: 15px;
       font-size: 1.3rem;
       font-weight: bold;
       cursor: pointer;
       transition: transform 0.2s;
+      margin: 10px;
+      width: 100%;
+      max-width: 300px;
     }
 
-    .start-btn:hover, .restart-btn:hover {
+    .start-btn {
+      background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+      color: white;
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      color: white;
+    }
+
+    .register-btn {
+      background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      color: white;
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      font-size: 1rem;
+      padding: 12px 30px;
+    }
+
+    .start-btn:hover, .restart-btn:hover, .login-btn:hover, .register-btn:hover, .logout-btn:hover {
       transform: scale(1.05);
     }
 
@@ -389,12 +409,14 @@ interface LeaderboardEntry {
 export class RacingGameComponent implements OnInit, OnDestroy {
   @ViewChild('gameCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  // API URL - เปลี่ยนตาม IP ของคุณ
+  // API URL
   private apiUrl = 'http://192.168.1.166/php-bob/racing/';
+
+  // User Management
+  currentUser: User | null = null;
 
   gameState: 'menu' | 'playing' | 'gameover' = 'menu';
   score = 0;
-  playerName = '';
   leaderboard: LeaderboardEntry[] = [];
   isLoading = false;
   isSaving = false;
@@ -413,16 +435,41 @@ export class RacingGameComponent implements OnInit, OnDestroy {
   private currentScore = 0;
   private lastSavedScore = 0;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.loadLeaderboard();
+    // โหลดข้อมูล user จาก localStorage
+    const userJson = localStorage.getItem('currentUser');
+    if (userJson) {
+      this.currentUser = JSON.parse(userJson);
+    }
+    
+    if (this.currentUser) {
+      this.loadLeaderboard();
+    }
   }
 
   ngOnDestroy() {
     if (this.game.animationId) {
       cancelAnimationFrame(this.game.animationId);
     }
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  goToRegister() {
+    this.router.navigate(['/register']);
+  }
+
+  onLogout() {
+    localStorage.removeItem('currentUser');
+    this.currentUser = null;
+    this.router.navigate(['/login']);
   }
 
   loadLeaderboard() {
@@ -448,14 +495,14 @@ export class RacingGameComponent implements OnInit, OnDestroy {
       });
   }
 
-  saveScore(name: string, finalScore: number) {
-    if (!name.trim() || finalScore <= 0) return;
+  saveScore(userId: number, finalScore: number) {
+    if (!userId || finalScore <= 0) return;
 
     this.isSaving = true;
     this.saveSuccess = false;
 
     const data = {
-      player_name: name.trim(),
+      user_id: userId,
       score: finalScore
     };
 
@@ -466,7 +513,7 @@ export class RacingGameComponent implements OnInit, OnDestroy {
           if (response.status === 'success') {
             this.saveSuccess = true;
             this.lastSavedScore = finalScore;
-            this.loadLeaderboard(); // โหลด leaderboard ใหม่
+            this.loadLeaderboard();
           } else {
             this.errorMessage = 'บันทึกคะแนนไม่สำเร็จ';
             console.error('Save error:', response.message);
@@ -481,8 +528,8 @@ export class RacingGameComponent implements OnInit, OnDestroy {
   }
 
   startGame() {
-    if (!this.playerName.trim()) {
-      alert('กรุณาใส่ชื่อผู้เล่น!');
+    if (!this.currentUser) {
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -623,8 +670,8 @@ export class RacingGameComponent implements OnInit, OnDestroy {
     this.gameState = 'gameover';
     
     // บันทึกคะแนนลง database
-    if (this.score > 0) {
-      this.saveScore(this.playerName, this.score);
+    if (this.score > 0 && this.currentUser) {
+      this.saveScore(this.currentUser.id, this.score);
     }
   }
 
@@ -632,11 +679,12 @@ export class RacingGameComponent implements OnInit, OnDestroy {
     this.gameState = 'menu';
     this.saveSuccess = false;
     this.errorMessage = '';
-    this.loadLeaderboard(); // โหลดข้อมูลใหม่
+    this.loadLeaderboard();
   }
 
   isCurrentPlayer(entry: LeaderboardEntry): boolean {
-    return entry.player_name === this.playerName && 
+    return this.currentUser !== null &&
+           entry.player_name === this.currentUser.name && 
            entry.score === this.lastSavedScore;
   }
 }
