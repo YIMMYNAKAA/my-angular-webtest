@@ -102,7 +102,7 @@ import { EMPTY } from 'rxjs';
     }
 
     input {
-      width: 100%;
+      width: 95%;
       padding: 12px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.3);
@@ -172,7 +172,7 @@ export class LoginComponent {
 
     const apiUrl = 'http://192.168.1.166/php-bob/login.php';
 
-    // ส่งข้อมูลแบบปกติ JSON
+ 
     const body = {
       email: this.email,
       password: this.password

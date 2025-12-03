@@ -86,7 +86,7 @@ import { Router } from '@angular/router';
     }
 
     input {
-      width: 100%;
+      width: 95%;
       padding: 12px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.3);
